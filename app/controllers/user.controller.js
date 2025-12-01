@@ -204,7 +204,7 @@ const verifyUser = async (req, res, next) => {
 //Role assign to User
 const roleAssign = async (req, res, next) => {
   const data = {
-    UserId: Number(req.params.id),
+    UserId: Number(req.params.id)
     RoleId: req.body.Id,
   };
 
@@ -230,10 +230,7 @@ const roleAssign = async (req, res, next) => {
       error.status = 400;
       return next(error);
     }
-  } catch (error) {
-    const e = new Error('Cannot assign role to the user');
-    return next(e);
-  }
+  } 
 };
 
 
