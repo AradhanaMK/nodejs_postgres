@@ -202,7 +202,7 @@ const verifyUser = async (req, res, next) => {
 };
 
 //Role assign to User
-const roleAssign = async (req, res, next) => {
+const roleAssign = async (req, res, next) => (
   const data = {
     UserId: Number(req.params.id),
     RoleId: req.body.Id,
