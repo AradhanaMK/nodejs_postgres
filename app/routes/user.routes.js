@@ -1,23 +1,70 @@
-var router = require("express").Router(;
-const userController = require("../controllers/user.controller.js");
+// Import necessary modules
+const express = require('express');
+const router = express.Router();
 
-// Retrieve all Users
-router.get("/list", userController.getAllUsers);
+// Import controller methods
+const userController = require('../controllers/userController');
 
-// Retrieve a single User with id
-router.get("/:id/get", userController.getUserById);
+// Route for getting all users
+router.get('/users', async (req, res) => {
+    try {
+        const users = await userController.getAllUsers();
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ message: 'Error retrieving users', error: error.message });
+    }
+});
 
-// Create a new User    
-router.post("/create", userController.createUser);
+// Route for creating a new user
+router.post('/users', async (req, res) => {
+    try {
+        const newUser = await userController.createUser(req.body);
+        res.status(201).json(newUser);
+    } catch (error) {
+        res.status(400).json({ message: 'Error creating user', error: error.message });
+    }
+});
 
-router.put("/update", userController.updateUser);
+// Route for getting a user by ID
+router.get('/users/:id', async (req, res) => {
+    try {
+        const user = await userController.getUserById(req.params.id);
+        if (user) {
+            res.status(200).json(user);
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Error retrieving user', error: error.message });
+    }
+});
 
-// Delete a User with id
-router.delete("/:id/delete", userController.deleteUser);
+// Route for updating a user by ID
+router.put('/users/:id', async (req, res) => {
+    try {
+        const updatedUser = await userController.updateUser(req.params.id, req.body);
+        if (updatedUser) {
+            res.status(200).json(updatedUser);
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        res.status(400).json({ message: 'Error updating user', error: error.message });
+    }
+});
 
-router.post("/login", userController.verifyUser);
+// Route for deleting a user by ID
+router.delete('/users/:id', async (req, res) => {
+    try {
+        const deletedUser = await userController.deleteUser(req.params.id);
+        if (deletedUser) {
+            res.status(204).send();
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting user', error: error.message });
+    }
+});
 
-router.post("/:id/role/assign", userController.roleAssign);
-
-
-module.exports = router; 
+module.exports = router;
