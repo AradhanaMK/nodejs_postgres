@@ -1,16 +1,19 @@
-var router = require("express").Router(;
-const userController = require("../controllers/user.controller.js");
+// Import necessary modules and middleware
+const express = require('express');
+const router = express.Router();
+const { verifyUser } = require('../controllers/user.controller');
+const { validateLogin } = require('../middleware/validation');
 
-// Retrieve all Users
-router.get("/list", userController.getAllUsers);
+// ========================
+// User Authentication Routes
+// ========================
 
-// Retrieve a single User with id
-router.get("/:id/get", userController.getUserById);
-
-// Create a new User    
-router.post("/create", userController.createUser);
-
-router.put("/update", userController.updateUser);
+/**
+ * @route POST /login
+ * @desc Log in a user
+ * @access Public
+ */
+router.post('/login', validateLogin, verifyUser);
 
 // Delete a User with id
 router.delete("/:id/delete", userController.deleteUser);
@@ -20,4 +23,4 @@ router.post("/login", userController.verifyUser);
 router.post("/:id/role/assign", userController.roleAssign);
 
 
-module.exports = router; 
+module.exports = router;
