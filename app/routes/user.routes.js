@@ -26,10 +26,20 @@ router.post('/users/:id/role/assign', validateUserId, validateRoleAssignment, us
 // Custom error handling middleware
 router.use((err, req, res, next) => {
     console.error(err.stack);
-    if (err.status) {
-        return res.status(err.status).send({ error: err.message });
+    const statusCode = err.status || 500;
+    let responseMessage = { error: 'Internal Server Error' };
+
+    if (statusCode === 400) {
+        responseMessage.error = err.message || 'Bad Request';
+    } else if (statusCode === 404) {
+        responseMessage.error = err.message || 'Not Found';
+    } else if (statusCode === 401) {
+        responseMessage.error = err.message || 'Unauthorized';
+    } else if (statusCode === 403) {
+        responseMessage.error = err.message || 'Forbidden';
     }
-    res.status(500).send({ error: 'Internal Server Error' });
+
+    res.status(statusCode).send(responseMessage);
 });
 
 // End of user routes
