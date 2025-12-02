@@ -1,28 +1,47 @@
-// User controller for handling user-related functionalities
+// User Controller
 
-const UserService = require('../services/user.service');
+const User = require('../models/user.model');
+const logger = require('../utils/logger');
 
 // Create a new user
-exports.createUser = (req, res) => {
-    // ... (implementation of create user)
+exports.createUser = async (req, res) => {
+    try {
+        const user = new User(req.body);
+        await user.save();
+        res.status(201).send(user);
+        logger.info('User created successfully:', user);
+    } catch (error) {
+        logger.error('Error creating user:', error);
+        res.status(400).send({ message: 'Error creating user', error });
+    }
 };
 
 // Get a user by ID
-exports.getUser = (req, res) => {
-    // ... (implementation of get user)
+exports.getUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).send({ message: 'User not found' });
+        }
+        res.send(user);
+        logger.info('Retrieved user:', user);
+    } catch (error) {
+        logger.error('Error retrieving user:', error);
+        res.status(500).send({ message: 'Error retrieving user', error });
+    }
 };
 
 // Delete a user by ID
-exports.deleteUser = (req, res) => {
-    // ... (implementation of delete user)
+exports.deleteUser = async (req, res) => {
+    try {
+        const user = await User.findByIdAndDelete(req.params.id);
+        if (!user) {
+            return res.status(404).send({ message: 'User not found' });
+        }
+        res.send({ message: 'User deleted successfully' });
+        logger.info('Deleted user:', user);
+    } catch (error) {
+        logger.error('Error deleting user:', error);
+        res.status(500).send({ message: 'Error deleting user', error });
+    }
 };
-
-// Placeholder for future functions
-
-
-// Improved error handling
-exports.errorHandler = (error, res) => {
-    console.error(error);
-    res.status(500).send({ message: error.message || 'An unexpected error occurred.' });
-};
-
