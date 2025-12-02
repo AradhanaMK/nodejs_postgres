@@ -9,7 +9,6 @@ router.get('/users/:id', userController.getUserById);
 // Create a new User
 router.post('/users', userController.createUser);
 
-// Update a User with id
 router.put('/users/:id', userController.updateUser);
 
 // Delete a User with id
