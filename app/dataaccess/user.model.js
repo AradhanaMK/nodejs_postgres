@@ -15,8 +15,8 @@ module.exports = (sequelize, Sequelize) => {
     },
     password: {
       type: Sequelize.STRING,
-      allowNull: false,
-    },
+      allowNull: false
+    }
     isDeleted: {
       type: Sequelize.BOOLEAN,
       defaultValue: false,
