@@ -1,6 +1,7 @@
 var router = require("express").Router(;
 const userController = require("../controllers/user.controller.js");
 
+// Retrieve all Users
 router.get("/list", userController.getAllUsers);
 
 // Retrieve a single User with id
