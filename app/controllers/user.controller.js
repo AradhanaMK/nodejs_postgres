@@ -2,7 +2,6 @@
 const User = require('../models/user.model');
 const logger = require('../utils/logger');
 
-// Create a new user
 exports.createUser = async (req, res) => {
     const { name, email } = req.body;
     // Basic validation step
