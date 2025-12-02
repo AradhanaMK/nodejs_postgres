@@ -16,7 +16,6 @@ router.put("/update", userController.updateUser);
 // Delete a User with id
 router.delete("/:id/delete", userController.deleteUser);
 
-// Login a new User    
 router.post("/login", userController.verifyUser);
 
 router.post("/:id/role/assign", userController.roleAssign);

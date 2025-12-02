@@ -57,7 +57,6 @@ const updateUser = async (req, res, next) => {
   }
 };
 
-// Update a user
 exports.updateUser = async (req, res) => {
     const { id } = req.params;
     const { name, email } = req.body;
