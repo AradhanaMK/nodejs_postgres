@@ -26,7 +26,8 @@ router.post('/users/:id/role/assign', validateUserId, validateRoleAssignment, us
 // Error handling middleware
 router.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).send({ error: 'Something went wrong!' });
+    const errorMessage = err.message || 'Something went wrong!';
+    res.status(500).send({ error: errorMessage });
 });
 
 // End of user routes
