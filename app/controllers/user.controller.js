@@ -1,47 +1,66 @@
-// User Controller
-
+// Import necessary modules and dependencies
 const User = require('../models/user.model');
 const logger = require('../utils/logger');
 
 // Create a new user
 exports.createUser = async (req, res) => {
+    const { name, email } = req.body;
+    // Basic validation step
+    if (!name || !email) {
+        return res.status(400).send({ message: 'Name and email are required.' });
+    }
     try {
-        const user = new User(req.body);
+        const user = new User({ name, email });
         await user.save();
         res.status(201).send(user);
-        logger.info('User created successfully:', user);
     } catch (error) {
-        logger.error('Error creating user:', error);
-        res.status(400).send({ message: 'Error creating user', error });
+        logger.error('Error creating user: ', error);
+        res.status(500).send({ message: 'An error occurred while creating the user.' });
     }
 };
 
-// Get a user by ID
-exports.getUser = async (req, res) => {
+// Get all users
+exports.getAllUsers = async (req, res) => {
     try {
-        const user = await User.findById(req.params.id);
-        if (!user) {
-            return res.status(404).send({ message: 'User not found' });
-        }
-        res.send(user);
-        logger.info('Retrieved user:', user);
+        const users = await User.find();
+        res.status(200).send(users);
     } catch (error) {
-        logger.error('Error retrieving user:', error);
-        res.status(500).send({ message: 'Error retrieving user', error });
+        logger.error('Error fetching users: ', error);
+        res.status(500).send({ message: 'An error occurred while fetching users.' });
     }
 };
 
-// Delete a user by ID
+// Update a user
+exports.updateUser = async (req, res) => {
+    const { id } = req.params;
+    const { name, email } = req.body;
+    // Basic validation step
+    if (!name && !email) {
+        return res.status(400).send({ message: 'At least one of name or email must be provided.' });
+    }
+    try {
+        const user = await User.findByIdAndUpdate(id, { name, email }, { new: true });
+        if (!user) {
+            return res.status(404).send({ message: 'User not found.' });
+        }
+        res.status(200).send(user);
+    } catch (error) {
+        logger.error('Error updating user: ', error);
+        res.status(500).send({ message: 'An error occurred while updating the user.' });
+    }
+};
+
+// Delete a user
 exports.deleteUser = async (req, res) => {
+    const { id } = req.params;
     try {
-        const user = await User.findByIdAndDelete(req.params.id);
+        const user = await User.findByIdAndDelete(id);
         if (!user) {
-            return res.status(404).send({ message: 'User not found' });
+            return res.status(404).send({ message: 'User not found.' });
         }
-        res.send({ message: 'User deleted successfully' });
-        logger.info('Deleted user:', user);
+        res.status(204).send();
     } catch (error) {
-        logger.error('Error deleting user:', error);
-        res.status(500).send({ message: 'Error deleting user', error });
+        logger.error('Error deleting user: ', error);
+        res.status(500).send({ message: 'An error occurred while deleting the user.' });
     }
 };
