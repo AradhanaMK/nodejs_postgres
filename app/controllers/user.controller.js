@@ -2,7 +2,6 @@
 const User = require('../models/user.model');
 const logger = require('../utils/logger');
 
-// Create a new user
 exports.createUser = async (req, res) => {
     const { name, email } = req.body;
     // Basic validation step
@@ -20,7 +19,6 @@ exports.createUser = async (req, res) => {
 };
 
 
-//Update a User
 const updateUser = async (req, res, next) => {
   logger.info("User -> Update API called.");
   const userData = {
