@@ -4,7 +4,7 @@ const logger = require('../utils/logger');
 
 // Create a new user
 exports.createUser = async (req, res) => {
-    const { name, email  = req.body;
+    const { name, email } = req.body;
     // Basic validation step
     if (!name || !email) {
         return res.status(400).send({ message: 'Name and email are required.' });
