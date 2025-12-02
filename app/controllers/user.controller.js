@@ -40,6 +40,7 @@ const createUser = async (req, res, next) => {
 };
 
 
+//Update a User
 const updateUser = async (req, res, next) => {
   logger.info("User -> Update API called.");
   const userData = {
