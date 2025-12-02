@@ -1,6 +1,7 @@
 var router = require('express').Router();
 const userController = require('../controllers/user.controller.js');
 
+// Retrieve all Users
 router.get('/users', userController.getAllUsers);
 
 // Retrieve a single User with id
@@ -9,6 +10,7 @@ router.get('/users/:id', userController.getUserById);
 // Create a new User
 router.post('/users', userController.createUser);
 
+// Update an existing User with id
 router.put('/users/:id', userController.updateUser);
 
 // Delete a User with id
