@@ -23,11 +23,13 @@ router.post('/users/login', userController.verifyUser);
 // Assign role to a User by id, expects role information in request body.
 router.post('/users/:id/role/assign', validateUserId, validateRoleAssignment, userController.roleAssign);
 
-// Error handling middleware
+// Custom error handling middleware
 router.use((err, req, res, next) => {
     console.error(err.stack);
-    const errorMessage = err.message || 'Something went wrong!';
-    res.status(500).send({ error: errorMessage });
+    if (err.status) {
+        return res.status(err.status).send({ error: err.message });
+    }
+    res.status(500).send({ error: 'Internal Server Error' });
 });
 
 // End of user routes
