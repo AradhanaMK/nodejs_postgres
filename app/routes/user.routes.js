@@ -10,8 +10,10 @@ router.get('/users/:id', userController.getUserById);
 // Create a new User, expects user attributes in request body
 router.post('/users', userController.createUser);
 
+// Update an existing User by id, expects updated user attributes in request body
 router.put('/users/:id', userController.updateUser);
 
+// Delete a User by id
 router.delete('/users/:id', userController.deleteUser);
 
 // Login a User, expects username and password in request body
