@@ -1,6 +1,7 @@
-const { validateCreateUser, validateUpdateUser } = require('./validators/userValidator');
-const userService = require('../services/user.service');
-var logger = require("../utils/logger");
+// app/controllers/user.controller.js
+
+const User = require('../models/User');
+const Role = require('../models/Role');
 
 //Create a User
 const createUser = async (req, res, next) => {
