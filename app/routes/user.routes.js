@@ -10,7 +10,6 @@ router.get('/users/:id', userController.getUserById);
 // Create a new User, expects user attributes in request body
 router.post('/users', userController.createUser);
 
-// Update a User with id
 router.put('/users/:id', userController.updateUser);
 
 router.delete('/users/:id', userController.deleteUser);
