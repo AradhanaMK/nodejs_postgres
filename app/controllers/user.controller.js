@@ -227,7 +227,7 @@ const roleAssign = async (req, res, next) => (
       });
     }
     else {
-      const error = new Error('Cannot find user due to Invalid Id');
+      const error = new Error('Cannot find user due to Invalid Id')
       error.status = 400;
       return next(error);
     }
