@@ -13,7 +13,6 @@ router.post('/users', userController.createUser);
 // Update a User with id
 router.put('/users/:id', userController.updateUser);
 
-// Delete a User by id
 router.delete('/users/:id', userController.deleteUser);
 
 // Login a User, expects username and password in request body
