@@ -22,4 +22,6 @@ router.post('/users/login', userController.verifyUser);
 // Assign role to a User
 router.post('/users/:id/role/assign', userController.roleAssign);
 
+// End of user routes
+
 module.exports = router;
