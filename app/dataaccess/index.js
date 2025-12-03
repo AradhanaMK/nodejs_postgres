@@ -1,34 +1,56 @@
-const dbConfig = require("../config/db.config.js");
+// Import necessary modules
+const { Sequelize, DataTypes } = require('sequelize');
 
-const Sequelize = require("sequelize");
-const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
-  host: dbConfig.HOST,
-  port: dbConfig.PORT,
-  dialect: dbConfig.dialect,
-  logging:false, //db table info not logged in console
-
-  pool: {
-    max: dbConfig.pool.max,
-    min: dbConfig.pool.min,
-    acquire: dbConfig.pool.acquire,
-    idle: dbConfig.pool.idle
-  }
+// Database connection setup
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
+    host: process.env.DB_HOST,
+    dialect: process.env.DB_DIALECT,
+    logging: false
 });
 
-const db = {};
+// Test the database connection
+sequelize.authenticate()
+    .then(() => {
+        console.log('Connection has been established successfully.');
+    })
+    .catch(err => {
+        console.error('Unable to connect to the database:', err);
+    });
 
-db.Sequelize = Sequelize;
-db.sequelize = sequelize;
+// Define models
+const User = sequelize.define('User', {
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
+});
 
-db.tutorials = require("./tutorial.model.js")(sequelize, Sequelize);
-db.users = require("./user.model.js")(sequelize, Sequelize);
-db.roles = require("./role.model.js")(sequelize, Sequelize);
-db.userRole = require("./userrole.model.js")(sequelize, Sequelize);
-db.products = require("./product.model.js")(sequelize, Sequelize);
-//Relationship between database
-db.users.hasMany(db.userRole,{foreignKey:'Id'})
-db.roles.hasMany(db.userRole,{foreignKey:'Id'})
-db.userRole.belongsTo(db.users,{foreignKey:'UserId'})
-db.userRole.belongsTo(db.roles,{foreignKey:'RoleId'})
+const Product = sequelize.define('Product', {
+    title: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    price: {
+        type: DataTypes.DECIMAL,
+        allowNull: false
+    },
+});
 
-module.exports = db;
+const UserRole = sequelize.define('UserRole', {
+    role: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+});
+
+// Updated Foreign Key Naming
+// const userForeignKey = 'userId'; // previously declared
+// const productForeignKey = 'productId'; // previously declared
+
+// Exporting models
+module.exports = { User, Product, UserRole, sequelize };
