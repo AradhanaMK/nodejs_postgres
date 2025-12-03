@@ -1,34 +1,16 @@
-const dbConfig = require("../config/db.config.js");
+// This file is responsible for managing data access
 
-const Sequelize = require("sequelize");
-const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
-  host: dbConfig.HOST,
-  port: dbConfig.PORT,
-  dialect: dbConfig.dialect,
-  logging:false, //db table info not logged in console
+// Model imports
+const Product = require('./models/Product');
+const User = require('./models/User');
+const Order = require('./models/Order'); // Include order model
 
-  pool: {
-    max: dbConfig.pool.max,
-    min: dbConfig.pool.min,
-    acquire: dbConfig.pool.acquire,
-    idle: dbConfig.pool.idle
-  }
-});
+// Foreign key definitions
+// User ID in Order model
+// Represents the user who placed the order
+const userForeignKey = 'userId'; // Foreign key for User
+// Product ID in Order model
+// Represents the product included in the order
+const productForeignKey = 'productId'; // Foreign key for Product
 
-const db = {};
-
-db.Sequelize = Sequelize;
-db.sequelize = sequelize;
-
-db.tutorials = require("./tutorial.model.js")(sequelize, Sequelize);
-db.users = require("./user.model.js")(sequelize, Sequelize);
-db.roles = require("./role.model.js")(sequelize, Sequelize);
-db.userRole = require("./userrole.model.js")(sequelize, Sequelize);
-db.products = require("./product.model.js")(sequelize, Sequelize);
-//Relationship between database
-db.users.hasMany(db.userRole,{foreignKey:'Id'})
-db.roles.hasMany(db.userRole,{foreignKey:'Id'})
-db.userRole.belongsTo(db.users,{foreignKey:'UserId'})
-db.userRole.belongsTo(db.roles,{foreignKey:'RoleId'})
-
-module.exports = db;
+// Additional business logic can go here
