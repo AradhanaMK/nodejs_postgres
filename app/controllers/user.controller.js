@@ -20,7 +20,7 @@ exports.createUser = async (req, res) => {
 };
 
 
-const updateUser = async (req, res, next) => {
+export const updateUser = async (req, res, next) => (
   logger.info("User -> Update API called.");
   const userData = {
     Id: req.body.Id,
