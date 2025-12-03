@@ -1,27 +1,56 @@
-// User Controller
-
+// Import necessary modules
 const User = require('../models/user.model');
-const { handleError } = require('../utils/errorHandler');
+const logger = require('../config/logger');
 
-const updateUser = async (req, res) => {
-    try {
-        const { id, userData } = req.body;
+// Create a new user
+exports.createUser = (req, res) => {
+    // Validation logic can be extracted for better structure
+    const user = new User({
+        name: req.body.name,
+        email: req.body.email
+    });
 
-        // Validate input
-        if (!id || !userData) {
-            return res.status(400).json({ message: 'Invalid input: user ID and data are required.' });
-        }
-
-        const user = await User.findByIdAndUpdate(id, userData, { new: true });
-        if (!user) {
-            return res.status(404).json({ message: 'User not found.' });
-        }
-
-        return res.status(200).json(user);
-    } catch (error) {
-        // Improved error handling to be more descriptive
-        handleError(res, error, 'An error occurred while updating the user.');
-    }
+    user.save()
+        .then(data => {
+            res.status(201).json(data);
+        })
+        .catch(err => {
+            logger.error('Error creating user: ', err);
+            res.status(500).send({ message: err.message || 'Some error occurred while creating the user.' });
+        });
 };
 
-module.exports = { updateUser };
+// Update user details
+exports.updateUser = (req, res) => {
+    const userId = req.params.id;
+    const updateData = req.body;
+
+    User.findByIdAndUpdate(userId, updateData, { new: true })
+        .then(user => {
+            if (!user) {
+                return res.status(404).send({ message: 'User not found' });
+            }
+            res.json(user);
+        })
+        .catch(err => {
+            logger.error('Error updating user: ', err);
+            res.status(500).send({ message: 'Cannot update user' });
+        });
+};
+
+// Delete user
+exports.deleteUser = (req, res) => {
+    const userId = req.params.id;
+
+    User.findByIdAndRemove(userId)
+        .then(user => {
+            if (!user) {
+                return res.status(404).send({ message: 'User not found' });
+            }
+            res.json({ message: 'User deleted successfully!' });
+        })
+        .catch(err => {
+            logger.error('Error deleting user: ', err);
+            res.status(500).send({ message: 'Could not delete user' });
+        });
+};
