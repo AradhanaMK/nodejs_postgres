@@ -5,10 +5,10 @@ const userController = require("../controllers/user.controller.js");
 router.get("/list", userController.getAllUsers);
 
 // Retrieve a single User with id
-router.get("/:id/get", userController.getUserById
+router.get("/:id/get", userController.getUserById);
 
 // Create a new User    
-router.post("/create", userController.createUser);
+router.post("/create", userController.createUser
 
 // Update a User with id
 router.put("/update", userController.updateUser);
