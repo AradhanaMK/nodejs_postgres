@@ -1,91 +1,56 @@
-// Import necessary modules and dependencies
+// Import necessary modules
 const User = require('../models/user.model');
-const logger = require('../utils/logger');
+const logger = require('../config/logger');
 
 // Create a new user
-exports.createUser = async (req, res) => {
-    const { name, email } = req.body;
-    // Basic validation step
-    if (!name || !email) {
-        return res.status(400).send({ message: 'Name and email are required.' });
-    }
-    try {
-        const user = new User({ name, email });
-        await user.save();
-        res.status(201).send(user);
-    } catch (error) {
-        logger.error('Error creating user: ', error);
-        res.status(500).send({ message: 'An error occurred while creating the user.' });
-    }
+exports.createUser = (req, res) => {
+    // Validation logic can be extracted for better structure
+    const user = new User({
+        name: req.body.name,
+        email: req.body.email
+    });
+
+    user.save()
+        .then(data => {
+            res.status(201).json(data);
+        })
+        .catch(err => {
+            logger.error('Error creating user: ', err);
+            res.status(500).send({ message: err.message || 'Some error occurred while creating the user.' });
+        });
 };
 
+// Update user details
+exports.updateUser = (req, res) => {
+    const userId = req.params.id;
+    const updateData = req.body;
 
-const updateUser = async (req, res, next) => {
-  logger.info("User -> Update API called.");
-  const userData = {
-    Id: req.body.Id,
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password
-  };
-  logger.info("updateUser" + JSON.stringify(userData));
-
-  try {
-    await validateUpdateUser(userData);
-  } catch (error) {
-    logger.warn(error);
-    error.status = 400;
-    return next(error);
-  }
-
-  try {
-    const user = await userService.updateUser(userData);
-    if (user) {
-      res.status(200).json({
-        'status': 'success',
-      });
-    }
-    else {
-      const error = new Error('Cannot update user due to Invalid Id');
-      error.status = 400;
-      return next(error);
-    }
-  } catch (error) {
-    const e = new Error('Cannot update user');
-    return next(e);
-  }
+    User.findByIdAndUpdate(userId, updateData, { new: true })
+        .then(user => {
+            if (!user) {
+                return res.status(404).send({ message: 'User not found' });
+            }
+            res.json(user);
+        })
+        .catch(err => {
+            logger.error('Error updating user: ', err);
+            res.status(500).send({ message: 'Cannot update user' });
+        });
 };
 
-exports.updateUser = async (req, res) => {
-    const { id } = req.params;
-    const { name, email } = req.body;
-    // Basic validation step
-    if (!name && !email) {
-        return res.status(400).send({ message: 'At least one of name or email must be provided.' });
-    }
-    try {
-        const user = await User.findByIdAndUpdate(id, { name, email }, { new: true });
-        if (!user) {
-            return res.status(404).send({ message: 'User not found.' });
-        }
-        res.status(200).send(user);
-    } catch (error) {
-        logger.error('Error updating user: ', error);
-        res.status(500).send({ message: 'An error occurred while updating the user.' });
-    }
-};
+// Delete user
+exports.deleteUser = (req, res) => {
+    const userId = req.params.id;
 
-// Delete a user
-exports.deleteUser = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const user = await User.findByIdAndDelete(id);
-        if (!user) {
-            return res.status(404).send({ message: 'User not found.' });
-        }
-        res.status(204).send();
-    } catch (error) {
-        logger.error('Error deleting user: ', error);
-        res.status(500).send({ message: 'An error occurred while deleting the user.' });
-    }
+    User.findByIdAndRemove(userId)
+        .then(user => {
+            if (!user) {
+                return res.status(404).send({ message: 'User not found' });
+            }
+            res.json({ message: 'User deleted successfully!' });
+        })
+        .catch(err => {
+            logger.error('Error deleting user: ', err);
+            res.status(500).send({ message: 'Could not delete user' });
+        });
 };
