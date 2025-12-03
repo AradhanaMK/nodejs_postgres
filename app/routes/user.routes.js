@@ -1,18 +1,13 @@
 const express = require('express');
-const userController = require('../controllers/user.controller');
+const userController = require('../controllers/userController');
 
 const router = express.Router();
 
-// Create a new user
-router.post('/create', userController.createUser); // Added closing parenthesis
-
-// Get user by ID
-router.get('/:id', userController.getUserById);
-
-// Update user by ID
-router.put('/:id', userController.updateUserById);
-
-// Delete user by ID
-router.delete('/:id', userController.deleteUserById);
+router.get('/users', userController.getAllUsers);
+router.get('/users/:id', userController.getUserById);
+router.post('/users', userController.createUser);
+router.put('/users/:id', userController.updateUser);
+router.delete('/users/:id', userController.deleteUser);
 
 module.exports = router;
+
