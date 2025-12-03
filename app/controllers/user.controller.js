@@ -20,18 +20,24 @@ exports.createUser = async (req, res) => {
 };
 
 
+const validateUserData = (userData) => {
+    if (!userData.name && !userData.email) {
+        throw new Error('At least one of name or email must be provided.');
+    }
+};
+
 const updateUser = async (req, res, next) => {
   logger.info("User -> Update API called.");
-  const userData = {
+  const updatedUserData = {
     Id: req.body.Id,
     name: req.body.name,
     email: req.body.email,
     password: req.body.password
   };
-  logger.info("updateUser" + JSON.stringify(userData));
+  logger.info("updateUser" + JSON.stringify(updatedUserData));
 
   try {
-    await validateUpdateUser(userData);
+    await validateUpdateUser(updatedUserData);
   } catch (error) {
     logger.warn(error);
     error.status = 400;
@@ -39,7 +45,7 @@ const updateUser = async (req, res, next) => {
   }
 
   try {
-    const user = await userService.updateUser(userData);
+    const user = await userService.updateUser(updatedUserData);
     if (user) {
       res.status(200).json({
         'status': 'success',
@@ -52,6 +58,7 @@ const updateUser = async (req, res, next) => {
     }
   } catch (error) {
     const e = new Error('Cannot update user');
+    logger.error('Error updating user: ', error);
     return next(e);
   }
 };
@@ -60,9 +67,7 @@ exports.updateUser = async (req, res) => {
     const { id } = req.params;
     const { name, email } = req.body;
     // Basic validation step
-    if (!name && !email) {
-        return res.status(400).send({ message: 'At least one of name or email must be provided.' });
-    }
+    validateUserData({ name, email });
     try {
         const user = await User.findByIdAndUpdate(id, { name, email }, { new: true });
         if (!user) {

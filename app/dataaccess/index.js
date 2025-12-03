@@ -26,8 +26,8 @@ db.roles = require("./role.model.js")(sequelize, Sequelize);
 db.userRole = require("./userrole.model.js")(sequelize, Sequelize);
 db.products = require("./product.model.js")(sequelize, Sequelize);
 //Relationship between database
-db.users.hasMany(db.userRole,{foreignKey:'Id'})
-db.roles.hasMany(db.userRole,{foreignKey:'Id'})
+db.users.hasMany(db.userRole,{foreignKey:'UserId'})
+db.roles.hasMany(db.userRole,{foreignKey:'RoleId'})
 db.userRole.belongsTo(db.users,{foreignKey:'UserId'})
 db.userRole.belongsTo(db.roles,{foreignKey:'RoleId'})
 
