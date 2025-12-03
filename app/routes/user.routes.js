@@ -1,21 +1,26 @@
-const express = require('express');
-const userController = require('../controllers/user.controller');
+var router = require("express").Router();
+const userController = require("../controllers/user.controller.js");
 
-const router = express.Router();
+// Retrieve all Users
+router.get("/list", userController.getAllUsers);
 
-// Route for retrieving a list of users
-router.get('/users', userController.listUsers);
+// Retrieve a single User with id
+router.get("/:id/get", userController.getUserById);
 
-// Route for creating a new user
-router.post('/users', userController.createUser);
+// Create a new User    
+router.post("/create", userController.createUser);
 
-// Route for retrieving a specific user by ID
-router.get('/users/:id', userController.getUserById);
+// Update a User with id
+router.post("/update", userController.updateUser);
 
-// Route for updating an existing user
-router.put('/users/:id', userController.updateUser);
+// Delete a User with id
+router.delete("/:id/delete", userController.deleteUser);
 
-// Route for deleting a user
-router.delete('/users/:id', userController.deleteUser);
+// Login a new User    
+router.post("/login", userController.verifyUser);
 
-module.exports = router;
+//Role assign to a User
+router.post("/:id/role/assign", userController.roleAssign);
+
+
+module.exports = router; 
