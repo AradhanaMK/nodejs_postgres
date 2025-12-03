@@ -1,16 +1,56 @@
-// This file is responsible for managing data access
+// Import necessary modules
+const { Sequelize, DataTypes } = require('sequelize');
 
-// Model imports
-const Product = require('./models/Product');
-const User = require('./models/User');
-const Order = require('./models/Order'); // Include order model
+// Database connection setup
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
+    host: process.env.DB_HOST,
+    dialect: process.env.DB_DIALECT,
+    logging: false
+});
 
-// Foreign key definitions
-// User ID in Order model
-// Represents the user who placed the order
-const userForeignKey = 'userId'; // Foreign key for User
-// Product ID in Order model
-// Represents the product included in the order
-const productForeignKey = 'productId'; // Foreign key for Product
+// Test the database connection
+sequelize.authenticate()
+    .then(() => {
+        console.log('Connection has been established successfully.');
+    })
+    .catch(err => {
+        console.error('Unable to connect to the database:', err);
+    });
 
-// Additional business logic can go here
+// Define models
+const User = sequelize.define('User', {
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
+});
+
+const Product = sequelize.define('Product', {
+    title: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    price: {
+        type: DataTypes.DECIMAL,
+        allowNull: false
+    },
+});
+
+const UserRole = sequelize.define('UserRole', {
+    role: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+});
+
+// Updated Foreign Key Naming
+// const userForeignKey = 'userId'; // previously declared
+// const productForeignKey = 'productId'; // previously declared
+
+// Exporting models
+module.exports = { User, Product, UserRole, sequelize };

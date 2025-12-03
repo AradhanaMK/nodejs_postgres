@@ -1,26 +1,27 @@
-// user.controller.js
+// User Controller
 
-const userData = {
-    id: null, // Changed Id to id for consistency
-    name: '',
-    email: '',
+const User = require('../models/user.model');
+const { handleError } = require('../utils/errorHandler');
+
+const updateUser = async (req, res) => {
+    try {
+        const { id, userData } = req.body;
+
+        // Validate input
+        if (!id || !userData) {
+            return res.status(400).json({ message: 'Invalid input: user ID and data are required.' });
+        }
+
+        const user = await User.findByIdAndUpdate(id, userData, { new: true });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        return res.status(200).json(user);
+    } catch (error) {
+        // Improved error handling to be more descriptive
+        handleError(res, error, 'An error occurred while updating the user.');
+    }
 };
 
-// Other existing code...
-
-async function updateUser(req, res) {
-    try {
-        const { id, name, email } = req.body;
-        if (!id) {
-            throw new Error('User ID is required');
-        }
-        // Assuming we have a setUser function to handle the user update logic
-        await setUser(id, { name, email });
-        res.status(200).send({ message: 'User updated successfully.' });
-    } catch (error) {
-        console.error('Error updating user:', error);
-        res.status(500).send({ message: `Failed to update user: ${error.message}` }); // More informative error message
-    }
-}
-
-// Other existing code...
+module.exports = { updateUser };

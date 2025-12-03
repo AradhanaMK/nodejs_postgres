@@ -1,30 +1,18 @@
-const Sequelize = require('sequelize');
-const sequelize = new Sequelize('database', 'username', 'password', {
-  host: 'localhost',
-  dialect: 'mysql'
-});
+const { Schema, model } = require('mongoose');
 
-const Product = sequelize.define('Product', {
+const productSchema = new Schema({
   productCode: {
-    type: Sequelize.STRING,
-    allowNull: false,
+    type: String,
+    required: true,
     unique: true
   },
-  name: {
-    type: Sequelize.STRING,
-    allowNull: false
-  },
-  description: {
-    type: Sequelize.TEXT
-  },
   price: {
-    type: Sequelize.FLOAT,
-    allowNull: false
-  },
-  isDeletedProduct: {
-    type: Sequelize.BOOLEAN,
-    defaultValue: false
+    type: Number,
+    required: true
   }
 });
 
+const Product = model('Product', productSchema);
+
 module.exports = Product;
+
