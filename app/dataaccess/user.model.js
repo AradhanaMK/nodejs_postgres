@@ -1,27 +1,13 @@
-module.exports = (sequelize, Sequelize) => {
-  const tblUser = sequelize.define("idt_tblUser", {
-    Id: {
-      type: Sequelize.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    name: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    email: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    password: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    isDeleted: {
-      type: Sequelize.BOOLEAN,
-      defaultValue: false,
-    },
-  });
+// User model for managing user data
+// The 'password' field must meet complexity requirements
+// 'isDeleted' indicates if the user account is marked for deletion
+const UserSchema = new mongoose.Schema({
+  username: { type: String, required: true },
+  email: { type: String, required: true },
+  password: { type: String, required: true }, // Password must be hashed and complex
+  isDeleted: { type: Boolean, default: false }, // Indicates if the user is deleted
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
 
-  return tblUser;
-};
+module.exports = mongoose.model('User', UserSchema);
