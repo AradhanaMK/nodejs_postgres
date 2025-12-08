@@ -43,16 +43,16 @@ const createUser = async (req, res, next) => {
 //Update a User
 const updateUser = async (req, res, next) => {
   logger.info("User -> Update API called.");
-  const updatedUserData = {
+  const userData = {
     Id: req.body.Id,
     name: req.body.name,
     email: req.body.email,
     password: req.body.password
   };
-  logger.info("updateUser" + JSON.stringify(updatedUserData));
+  logger.info("updateUser" + JSON.stringify(userData));
 
   try {
-    await validateUpdateUser(updatedUserData);
+    await validateUpdateUser(userData);
   } catch (error) {
     logger.warn(error);
     error.status = 400;
@@ -60,7 +60,7 @@ const updateUser = async (req, res, next) => {
   }
 
   try {
-    const user = await userService.updateUser(updatedUserData);
+    const user = await userService.updateUser(userData);
     if (user) {
       res.status(200).json({
         'status': 'success',
@@ -73,7 +73,6 @@ const updateUser = async (req, res, next) => {
     }
   } catch (error) {
     const e = new Error('Cannot update user');
-    logger.error('Error updating user: ', error);
     return next(e);
   }
 };
