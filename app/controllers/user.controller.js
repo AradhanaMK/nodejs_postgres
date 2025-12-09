@@ -1,248 +1,57 @@
-const { validateCreateUser, validateUpdateUser } = require('./validators/userValidator');
+app/controllers/user.controller.js
+
+// Import necessary services and validation functions
 const userService = require('../services/user.service');
-var logger = require("../utils/logger");
+const { validateCreateUser, validateUpdateUser } = require('../validators/user.validator');
 
-//Create a User
-const createUser = async (req, res, next) => {
-  const userData = {
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password
-  };
-  logger.info("User -> Create API called.");
-  logger.debug("createUser" + JSON.stringify(userData));
-
-  try {
-    await validateCreateUser(userData);
-  } catch (error) {
-    logger.log(error);
-    const e = new Error('Invalid email or password');
-    e.status = 400;
-    return next(e);
-  }
-
-  try {
-    const user = await userService.createUser(userData);
-    if (user) {
-      res.status(200).json({
-        'status': 'success',
-        'user' : user
-      });
-    } else {
-      const error = new Error('User already exists');
-      error.status = 400;
-      return next(error);
+// Create a new user
+exports.createUser = async (req, res) => {
+    try {
+        const validationErrors = validateCreateUser(req.body);
+        if (validationErrors) {
+            return res.status(400).json({ message: `Validation errors: ${validationErrors}` });
+        }
+        const newUser = await userService.createUser(req.body);
+        return res.status(201).json(newUser);
+    } catch (error) {
+        console.error('Error creating user:', error);
+        return res.status(500).json({ message: 'An error occurred while creating the user.' });
     }
-  } catch (error) {
-    const e = new Error('Cannot create user');
-    return next(e);
-  }
 };
 
-
-//Update a User
-const updateUser = async (req, res, next) => {
-  logger.info("User -> Update API called.");
-  const userData = {
-    Id: req.body.Id,
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password
-  };
-  logger.info("updateUser" + JSON.stringify(userData));
-
-  try {
-    await validateUpdateUser(userData);
-  } catch (error) {
-    logger.warn(error);
-    error.status = 400;
-    return next(error);
-  }
-
-  try {
-    const user = await userService.updateUser(userData);
-    if (user) {
-      res.status(200).json({
-        'status': 'success',
-      });
+// Verify user
+exports.verifyUser = async (req, res) => {
+    try {
+        const user = await userService.verifyUser(req.params.id);
+        return res.status(200).json(user);
+    } catch (error) {
+        console.error('Error verifying user:', error);
+        return res.status(500).json({ message: 'An error occurred while verifying the user.' });
     }
-    else {
-      const error = new Error('Cannot update user due to Invalid Id');
-      error.status = 400;
-      return next(error);
-    }
-  } catch (error) {
-    const e = new Error('Cannot update user');
-    return next(e);
-  }
 };
 
-//Get a User By Id
-const getUserById = async (req, res, next) => {
-  logger.info("User -> Get by user id API called.");
-  const Id = req.params.id;
-  console.log(Id);
-  if (Id <= 0) {
-    const error = new Error('User Id can not be 0 or -Ve number');
-    error.status = 400;
-    return next(error);
-  }
-
-  try {
-    const user = await userService.getUserById(Id);
-    console.log(user);
-    if (user) {
-      res.status(200).json({
-        'status': 'success',
-        'user': user,
-      });
+// Update user
+exports.updateUser = async (req, res) => {
+    try {
+        const validationErrors = validateUpdateUser(req.body);
+        if (validationErrors) {
+            return res.status(400).json({ message: `Validation errors: ${validationErrors}` });
+        }
+        const updatedUser = await userService.updateUser(req.params.id, req.body);
+        return res.status(200).json(updatedUser);
+    } catch (error) {
+        console.error('Error updating user:', error);
+        return res.status(500).json({ message: 'An error occurred while updating the user.' });
     }
-    else {
-      const error = new Error('Cannot find user due to Invalid Id');
-      error.status = 400;
-      return next(error);
-    }
-  } catch (error) {
-    const e = new Error('Cannot find the user');
-    return next(e);
-  }
 };
 
-//Get all User
-const getAllUsers = async (req, res, next) => {
-  logger.info("User -> Get all user API called.");
-  try {
-    const user = await userService.getAllUsers();
-    logger.info(user);
-    if (user) {
-      res.status(200).json({
-        'status': 'success',
-        'users': user,
-      });
+// Delete user
+exports.deleteUser = async (req, res) => {
+    try {
+        await userService.deleteUser(req.params.id);
+        return res.status(204).send();
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        return res.status(500).json({ message: 'An error occurred while deleting the user.' });
     }
-    else {
-      const error = new Error('No data available');
-      error.status = 400;
-      return next(error);
-    }
-  } catch (error) {
-    const e = new Error('Cannot find the user');
-    return next(e);
-  }
-};
-
-//delete a User
-const deleteUser = async (req, res, next) => {
-  const id = req.params.id;
-  console.log(id);
-  if (id <= 0) {
-    const error = new Error('User Id can not be 0 or -Ve number');
-    error.status = 400;
-    return next(error);
-  }
-
-  try {
-    const user = await userService.deleteUser(id);
-    console.log(user);
-    if (user) {
-      res.status(200).json({
-        'status': 'success',
-      });
-    }
-    else {
-      const error = new Error('Cannot delete User with id=${id}. Maybe User was not found!');
-      error.status = 400;
-      return next(error);
-    }
-  } catch (error) {
-    const e = new Error('Could not delete User with id=' + id);
-    return next(e);
-  }
-};
-
-
-const verifyUser = async (req, res, next) => {
-  //const userData = req.body;
-  const userData = {
-    email: req.body.email,
-    password: req.body.password
-  };
-
-  try {
-    await validate(userData);
-  } catch (error) {
-    const e = new Error('Wrong email or password');
-    e.status = 400;
-    return next(e);
-  }
-
-  try {
-    const user = await userService.verifyUser(userData);
-    if (user) {
-      try {
-        const token = await createToken({ email: userData.email, id: user._id });
-        res.status(200).json({
-          'status': 'success',
-          'token': token,
-        });
-      } catch (error) {
-        console.log(error);
-        const e = new Error('Cannot create token');
-        return next(e);
-      }
-    } else {
-      const e = new Error('Wrong email or password');
-      e.status = 400;
-      return next(e);
-    }
-  } catch (error) {
-    const e = new Error('Cannot verify user');
-    return next(e);
-  }
-};
-
-//Role assign to User
-const roleAssign = async (req, res, next) => {
-  const data = {
-    UserId: Number(req.params.id),
-    RoleId: req.body.Id,
-  };
-
-  logger.info("roleAssign" + JSON.stringify(data));
-
-  if (data.UserId <= 0 || data.RoleId <=0) {
-    const error = new Error('User & Role Id can not be 0 or -Ve number');
-    error.status = 400;
-    return next(error);
-  }
-
-  try {
-    const user = await userService.roleAssign(data);
-    console.log(user);
-    if (user) {
-      res.status(200).json({
-        'status': 'success',
-        'data': user,
-      });
-    }
-    else {
-      const error = new Error('Cannot find user due to Invalid Id');
-      error.status = 400;
-      return next(error);
-    }
-  } catch (error) {
-    const e = new Error('Cannot assign role to the user');
-    return next(e);
-  }
-};
-
-
-module.exports = {
-  getAllUsers,
-  getUserById,
-  createUser,
-  updateUser,
-  deleteUser,
-  verifyUser,
-  roleAssign,
 };
